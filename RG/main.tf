@@ -1,7 +1,7 @@
 #Create Resource Group in Azure
 resource "azurerm_resource_group" "resourcegroup" {
   name     = "${var.prefix}-resources"
-  location = "${var.Location}"
+  location = "${var.location}"
   tags {
     environment = "dev"
   }

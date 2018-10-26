@@ -1,30 +1,46 @@
 
+resource "azurerm_public_ip" "vm-pip" {
+  name                         = "${var.rg_name}-vm-pip"
+  location                     = "${var.location}"
+  resource_group_name          = "${var.rg_name}"
+  public_ip_address_allocation = "Dynamic"
+  idle_timeout_in_minutes      = 30
 
-resource "azurerm_network_interface" "main" {
-  name                = "${var.prefix}-nic"
-  location            = "${var.location}"
-  resource_group_name = "${var.rg_name}"
-
-  ip_configuration {
-    name                          = "ipconfi1"
-    subnet_id                     = "${azurerm_subnet.internal.id}"
-    private_ip_address_allocation = "dynamic"
+  tags {
+    environment = "dev"
   }
 }
 
-resource "azurerm_virtual_machine" "main" {
+resource "azurerm_network_interface" "vmnic" {
+  name                = "${var.rg_name}-vm-nic"
+  location            = "${var.location}"
+  resource_group_name = "${var.rg_name}"
+  
+  network_security_group_id = "${var.nsg_id}"
+
+  ip_configuration {
+    name                          = "ipconfi1"
+    subnet_id                     = "${var.sid}"
+    private_ip_address_allocation = "dynamic"
+    public_ip_address_id          = "${azurerm_public_ip.vm-pip.id}"
+    
+  }
+}
+
+resource "azurerm_virtual_machine" "vm" {
   name                  = "${var.rg_name}-vm"
   location              = "${var.location}"
   resource_group_name   = "${var.rg_name}"
-  network_interface_ids = ["${azurerm_network_interface.main.id}"]
+  network_interface_ids = ["${azurerm_network_interface.vmnic.id}"]
   vm_size               = "Standard_DS1_v2"
+  
 
   # Uncomment this line to delete the OS disk automatically when deleting the VM
   # delete_os_disk_on_termination = true
 
   # Uncomment this line to delete the data disks automatically when deleting the VM
   # delete_data_disks_on_termination = true
-
+  
   storage_image_reference {
     publisher = "Canonical"
     offer     = "UbuntuServer"

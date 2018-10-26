@@ -1,9 +1,9 @@
 output "ip_address" {
-  value = "${azurerm_network_interface.main.private_ip_address}"
+  value = "${azurerm_network_interface.vmnic.private_ip_address}"
 }
 
 output "id" {
-  value = "${azurerm_network_interface.main.id}"
+  value = "${azurerm_network_interface.vmnic.id}"
 }
 
 output "username" {
@@ -18,4 +18,11 @@ output "hostname" {
   value = "${var.hostname}"
 }
 
+output "vm-pip" {
+  value = "${azurerm_public_ip.vm-pip.ip_address}"
+}
+
+output "vm-id" {
+  value = "${azurerm_virtual_machine.vm.id}"
+}
 
